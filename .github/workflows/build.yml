@@ -1,0 +1,32 @@
+name: Build EXE
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install opencv-python numpy pillow rembg onnxruntime pyinstaller scipy
+
+    - name: Build EXE
+      run: |
+        pyinstaller --noconfirm --clean --onedir --windowed first3.py
+
+    - name: Upload EXE
+      uses: actions/upload-artifact@v4
+      with:
+        name: exe-build
+        path: dist/
